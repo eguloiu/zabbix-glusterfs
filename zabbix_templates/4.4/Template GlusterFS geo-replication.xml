@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>4.4</version>
+    <date>2022-05-19T19:30:43Z</date>
+    <groups>
+        <group>
+            <name>Linux servers</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Template GlusterFS geo-replication</template>
+            <name>Template GlusterFS geo-replication</name>
+            <groups>
+                <group>
+                    <name>Linux servers</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Gluster</name>
+                </application>
+                <application>
+                    <name>Gluster raw items</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>Gluster geo-replication raw</name>
+                    <key>gluster[georep-status-xml]</key>
+                    <delay>5m</delay>
+                    <history>30d</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Gluster raw items</name>
+                        </application>
+                    </applications>
+                </item>
+            </items>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Glusterfs geo-replication</name>
+                    <key>gluster[georep-discovery]</key>
+                    <delay>1h</delay>
+                    <lifetime>3d</lifetime>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Gluster geo-replication status {#MASTERHOSTNAME}</name>
+                            <type>DEPENDENT</type>
+                            <key>gluster.georep.status[{#MASTERUUID}]</key>
+                            <delay>0</delay>
+                            <history>30d</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Gluster</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>XMLPATH</type>
+                                    <params>string(/cliOutput/geoRep/volume/sessions/session/pair[master_node_uuid=&quot;{#MASTERUUID}&quot;]/status)</params>
+                                </step>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <params>6h</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>gluster[georep-status-xml]</key>
+                            </master_item>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{str(Active)}=0 and {str(Passive)}=0</expression>
+                                    <name>Gluster geo-replication FAILED on {#MASTERHOSTNAME}</name>
+                                    <priority>HIGH</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+        </template>
+    </templates>
+</zabbix_export>
