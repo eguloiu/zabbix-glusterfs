@@ -1,0 +1,71 @@
+- name: Install prerequisites
+  yum:
+    name: python-xmltodict
+    state: present
+
+- name: Pushing Zabbix script for monitoring Glusterfs
+  copy:
+    src: "{{ role_path }}/templates/gluster-monitoring.py"
+    dest: /etc/zabbix/gluster-monitoring.py
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Pushing Zabbix script for monitoring Glusterfs
+  copy:
+    src: "{{ role_path }}/templates/gluster.conf"
+    dest: /etc/zabbix/zabbix_agentd.d/gluster.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Adding GLUSTERMON cmd alias to sudoers
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^Cmnd_Alias GLUSTERMON ='
+    line: 'Cmnd_Alias GLUSTERMON = /etc/zabbix/gluster-monitoring.py *'
+    validate: /usr/sbin/visudo -cf %s
+
+- name: Adding GLUSTER cmd alias to sudoers
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^Cmnd_Alias GLUSTER ='
+    line: 'Cmnd_Alias GLUSTER = /usr/sbin/gluster'
+    validate: /usr/sbin/visudo -cf %s
+
+- name: 'Adding Defaults:zabbix !requiretty to sudoers'
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^Defaults:zabbix !requiretty'
+    line: 'Defaults:zabbix !requiretty'
+    validate: /usr/sbin/visudo -cf %s
+
+- name: 'Adding Defaults:zabbix !syslog to sudoers'
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^Defaults:zabbix !syslog'
+    line: 'Defaults:zabbix !syslog'
+    validate: /usr/sbin/visudo -cf %s
+
+- name: Adding script elevation permissions to sudoers
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^zabbix ALL = NOPASSWD: GLUSTER, GLUSTERMON'
+    line: 'zabbix ALL = NOPASSWD: GLUSTER, GLUSTERMON'
+    validate: /usr/sbin/visudo -cf %s
+
+- name: Stop zabbix agent
+  service:
+    name: zabbix-agent
+    state: stopped
+
+- name: Start zabbix agent
+  service:
+    name: zabbix-agent
+    state: started
+

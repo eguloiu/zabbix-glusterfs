@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>4.4</version>
+    <date>2022-05-19T19:30:08Z</date>
+    <groups>
+        <group>
+            <name>Templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Template GlusterFS disks</template>
+            <name>Template GlusterFS disks</name>
+            <description>Monitor glusterfs via gluster</description>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Gluster</name>
+                </application>
+                <application>
+                    <name>Gluster raw items</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>Gluster peers status</name>
+                    <key>peers.status</key>
+                    <delay>5m</delay>
+                    <history>30d</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Gluster raw items</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <params>6h</params>
+                        </step>
+                    </preprocessing>
+                </item>
+            </items>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Gluster volumes</name>
+                    <key>gluster.discovery</key>
+                    <delay>1h</delay>
+                    <filter>
+                        <conditions>
+                            <condition>
+                                <macro>{#NAME}</macro>
+                                <value>gluster_shared_storage</value>
+                                <operator>NOT_MATCHES_REGEX</operator>
+                                <formulaid>A</formulaid>
+                            </condition>
+                        </conditions>
+                    </filter>
+                    <lifetime>3d</lifetime>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Gluster bricks free size</name>
+                            <type>DEPENDENT</type>
+                            <key>gluster.bricks.free[{#NAME}]</key>
+                            <delay>0</delay>
+                            <history>30d</history>
+                            <trends>90d</trends>
+                            <units>B</units>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Gluster vol: {#NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>XMLPATH</type>
+                                    <params>number(sum(/cliOutput/volStatus/volumes/volume/node/sizeFree))</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>gluster.volume[status,{#NAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Gluster bricks inodes free</name>
+                            <type>DEPENDENT</type>
+                            <key>gluster.bricks.inodesFree[{#NAME}]</key>
+                            <delay>0</delay>
+                            <history>3d</history>
+                            <trends>90d</trends>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Gluster vol: {#NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>XMLPATH</type>
+                                    <params>number(sum(/cliOutput/volStatus/volumes/volume/node/inodesFree))</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>gluster.volume[status,{#NAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Gluster bricks inodes total</name>
+                            <type>DEPENDENT</type>
+                            <key>gluster.bricks.inodesTotal[{#NAME}]</key>
+                            <delay>0</delay>
+                            <history>30d</history>
+                            <trends>90d</trends>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Gluster vol: {#NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>XMLPATH</type>
+                                    <params>number(sum(/cliOutput/volStatus/volumes/volume/node/inodesTotal))</params>
+                                </step>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <params>6h</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>gluster.volume[status,{#NAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Gluster bricks total size</name>
+                            <type>DEPENDENT</type>
+                            <key>gluster.bricks.size[{#NAME}]</key>
+                            <delay>0</delay>
+                            <history>30d</history>
+                            <trends>90d</trends>
+                            <units>B</units>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Gluster vol: {#NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>XMLPATH</type>
+                                    <params>number(sum(/cliOutput/volStatus/volumes/volume/node/sizeTotal))</params>
+                                </step>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <params>6h</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>gluster.volume[status,{#NAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Gluster volume bricks count</name>
+                            <type>DEPENDENT</type>
+                            <key>gluster.volume.brickCount[{#NAME}]</key>
+                            <delay>0</delay>
+                            <history>3d</history>
+                            <trends>0</trends>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Gluster vol: {#NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>XMLPATH</type>
+                                    <params>number(/cliOutput/volInfo/volumes/volume/brickCount)</params>
+                                </step>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <params>6h</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>gluster.volume[info,{#NAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Gluster volume bricks active count</name>
+                            <type>DEPENDENT</type>
+                            <key>gluster.volume.bricks.status[{#NAME}]</key>
+                            <delay>0</delay>
+                            <history>30d</history>
+                            <trends>90d</trends>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Gluster vol: {#NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>XMLPATH</type>
+                                    <params>sum(/cliOutput/volStatus/volumes/volume/node/status)</params>
+                                </step>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <params>6h</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>gluster.volume[status,{#NAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Gluster volume free size</name>
+                            <type>CALCULATED</type>
+                            <key>gluster.volume.free[{#NAME}]</key>
+                            <delay>5m</delay>
+                            <history>30d</history>
+                            <trends>90d</trends>
+                            <units>B</units>
+                            <params>last(gluster.bricks.free[{#NAME}]) / last(gluster.volume.replicaCount[{#NAME}])</params>
+                            <description>Total bricks free size / replica count.</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Gluster vol: {#NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Gluster volume inodes free</name>
+                            <type>CALCULATED</type>
+                            <key>gluster.volume.inodesFree[{#NAME}]</key>
+                            <delay>5m</delay>
+                            <history>30d</history>
+                            <trends>90d</trends>
+                            <params>last(gluster.bricks.inodesFree[{#NAME}]) / last(gluster.volume.replicaCount[{#NAME}])</params>
+                            <description>Total bricks inodes free / replica count.</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Gluster vol: {#NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Gluster volume inodes</name>
+                            <type>CALCULATED</type>
+                            <key>gluster.volume.inodes[#NAME}]</key>
+                            <delay>1h</delay>
+                            <history>60d</history>
+                            <params>last(gluster.bricks.inodesTotal[{​​#NAME}​​]) / last(gluster.volume.replicaCount[{​​#NAME}​​])</params>
+                            <description>Total bricks inodes / replica count.</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Gluster vol: {#NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <params>6h</params>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Gluster volume replica count</name>
+                            <type>DEPENDENT</type>
+                            <key>gluster.volume.replicaCount[{#NAME}]</key>
+                            <delay>0</delay>
+                            <history>3d</history>
+                            <trends>0</trends>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Gluster vol: {#NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>XMLPATH</type>
+                                    <params>number(/cliOutput/volInfo/volumes/volume/replicaCount)</params>
+                                </step>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <params>6h</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>gluster.volume[info,{#NAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Gluster volume size</name>
+                            <type>CALCULATED</type>
+                            <key>gluster.volume.size[{#NAME}]</key>
+                            <delay>1h</delay>
+                            <history>30d</history>
+                            <trends>90d</trends>
+                            <units>B</units>
+                            <params>last(gluster.bricks.size[{#NAME}]) / last(gluster.volume.replicaCount[{#NAME}])</params>
+                            <description>Total bricks size / replica count.</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Gluster vol: {#NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <params>6h</params>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Gluster volume status</name>
+                            <type>DEPENDENT</type>
+                            <key>gluster.volume.status[{#NAME}]</key>
+                            <delay>0</delay>
+                            <history>3d</history>
+                            <trends>0</trends>
+                            <value_type>CHAR</value_type>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Gluster vol: {#NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>XMLPATH</type>
+                                    <params>/cliOutput/volInfo/volumes/volume/statusStr/text()</params>
+                                </step>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <params>6h</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>gluster.volume[info,{#NAME}]</key>
+                            </master_item>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{str(Started)}=0</expression>
+                                    <name>Volume {#NAME} not Started on {HOST.NAME}</name>
+                                    <priority>AVERAGE</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Gluster volume info {#NAME}</name>
+                            <key>gluster.volume[info,{#NAME}]</key>
+                            <delay>1h</delay>
+                            <history>1d</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Gluster raw items</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Gluster volume status {#NAME}</name>
+                            <key>gluster.volume[status,{#NAME}]</key>
+                            <delay>5m</delay>
+                            <history>1d</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Gluster raw items</name>
+                                </application>
+                            </applications>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Gluster vol: {#NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                    <trigger_prototypes>
+                        <trigger_prototype>
+                            <expression>{Template GlusterFS disks:gluster.volume.brickCount[{#NAME}].last()}&lt;&gt;{Template GlusterFS disks:gluster.volume.bricks.status[{#NAME}].last()}</expression>
+                            <name>Brick in Volume {#NAME} Offline on {HOST.NAME}</name>
+                            <priority>HIGH</priority>
+                            <description>Count active bricks is different from total count.</description>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <expression>{Template GlusterFS disks:gluster.volume.inodesFree[{#NAME}].last()} / {Template GlusterFS disks:gluster.volume.inodes[#NAME}].last()} * 100 &lt; 10</expression>
+                            <name>Free inodes is less than 10% on volume {#NAME} on {HOST.NAME}</name>
+                            <priority>HIGH</priority>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <expression>{Template GlusterFS disks:gluster.volume.free[{#NAME}].last()} / {Template GlusterFS disks:gluster.volume.size[{#NAME}].last()} * 100 &lt; {$GLUSTER.FS.PFREE.MIN.CRIT}</expression>
+                            <name>Free volume ( {#NAME}) size is less than {$GLUSTER.FS.PFREE.MIN.CRIT}% on {HOST.NAME}</name>
+                            <priority>HIGH</priority>
+                        </trigger_prototype>
+                        <trigger_prototype>
+                            <expression>{Template GlusterFS disks:gluster.volume.free[{#NAME}].last()} / {Template GlusterFS disks:gluster.volume.size[{#NAME}].last()} * 100 &lt; {$GLUSTER.FS.PFREE.MIN.WARN}</expression>
+                            <name>Free volume ( {#NAME}) size is less than {$GLUSTER.FS.PFREE.MIN.WARN}% on {HOST.NAME}</name>
+                            <priority>WARNING</priority>
+                        </trigger_prototype>
+                    </trigger_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Gluster peers</name>
+                    <key>pool.discovery</key>
+                    <delay>1h</delay>
+                    <lifetime>3d</lifetime>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Peer {#HOSTNAME} connected status</name>
+                            <type>DEPENDENT</type>
+                            <key>gluster.peer.connected[{#UUID}]</key>
+                            <delay>0</delay>
+                            <history>60d</history>
+                            <applications>
+                                <application>
+                                    <name>Gluster</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>XMLPATH</type>
+                                    <params>number(/cliOutput/peerStatus/peer[uuid=&quot;{#UUID}&quot;]/connected)</params>
+                                </step>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <params>6h</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>peers.status</key>
+                            </master_item>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}&lt;&gt;1</expression>
+                                    <name>Gluster peer {#HOSTNAME} disconnected on {HOST.NAME}</name>
+                                    <priority>HIGH</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Peer state {#HOSTNAME}</name>
+                            <type>DEPENDENT</type>
+                            <key>gluster.peer.state[{#UUID}]</key>
+                            <delay>0</delay>
+                            <history>60d</history>
+                            <trends>0</trends>
+                            <value_type>CHAR</value_type>
+                            <applications>
+                                <application>
+                                    <name>Gluster</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>XMLPATH</type>
+                                    <params>string(/cliOutput/peerStatus/peer[uuid=&quot;{#UUID}&quot;]/stateStr)</params>
+                                </step>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <params>6h</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>peers.status</key>
+                            </master_item>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}&lt;&gt;3</expression>
+                                    <name>Gluster peer {#HOSTNAME} state on {HOST.NAME}</name>
+                                    <priority>HIGH</priority>
+                                    <description>Code    Meaning&#13;
+----    ----------&#13;
+ 0      Establishing Connection&#13;
+ 1      Probe Sent to Peer&#13;
+ 2      Probe Received from Peer&#13;
+ 3      Peer in Cluster&#13;
+ 4      Accepted peer request&#13;
+ 5      Sent and Received peer request&#13;
+ 6      Peer Rejected&#13;
+ 7      Peer detach in progress&#13;
+ 8      Probe Received from peer&#13;
+ 9      Connected to Peer&#13;
+ 10     Peer is connected and Accepted&#13;
+ 11     Invalid State</description>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+            <macros>
+                <macro>
+                    <macro>{$GLUSTER.FS.PFREE.MIN.CRIT}</macro>
+                    <value>5</value>
+                </macro>
+                <macro>
+                    <macro>{$GLUSTER.FS.PFREE.MIN.WARN}</macro>
+                    <value>10</value>
+                </macro>
+            </macros>
+        </template>
+    </templates>
+</zabbix_export>

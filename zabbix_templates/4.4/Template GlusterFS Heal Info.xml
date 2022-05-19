@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>4.4</version>
+    <date>2022-05-19T19:31:02Z</date>
+    <groups>
+        <group>
+            <name>Templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Template GlusterFS Heal Info</template>
+            <name>Template GlusterFS Heal Info</name>
+            <description>GlusterFS Zabbix Monitoring</description>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Gluster Heal Info</name>
+                    <key>check_gluster_heal_info</key>
+                    <delay>30s</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Gluster {#VOLUME_NAME} Heal Entries</name>
+                            <key>check_gluster_heal_info[{#VOLUME_NAME},value]</key>
+                            <delay>30s</delay>
+                            <history>30d</history>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{avg(5m)}&gt;=10</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>{avg(5m)}&lt;10</recovery_expression>
+                                    <name>Gluster {#VOLUME_NAME} Heal Entries {ITEM.VALUE} Needs Recovery on {HOST.NAME}</name>
+                                    <priority>WARNING</priority>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{avg(5m)}&gt;=50</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>{avg(5m)}&lt;50</recovery_expression>
+                                    <name>Gluster {#VOLUME_NAME} Heal Entries {ITEM.VALUE} Needs Recovery on {HOST.NAME}</name>
+                                    <priority>HIGH</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Gluster Heal Info</name>
+                    <key>gluster[discovery]</key>
+                    <delay>30s</delay>
+                    <filter>
+                        <conditions>
+                            <condition>
+                                <macro>{#NAME}</macro>
+                                <value>gluster_shared_storage</value>
+                                <operator>NOT_MATCHES_REGEX</operator>
+                                <formulaid>A</formulaid>
+                            </condition>
+                        </conditions>
+                    </filter>
+                    <lifetime>1h</lifetime>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Gluster {#NAME} Heal Entries</name>
+                            <key>gluster[healentries,{#NAME}]</key>
+                            <delay>30s</delay>
+                            <history>30d</history>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}&gt;=10</expression>
+                                    <name>Gluster {#VOLUME_NAME} Heal Entries {ITEM.VALUE} Needs Recovery on {HOST.NAME}</name>
+                                    <priority>AVERAGE</priority>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}&gt;=50</expression>
+                                    <name>Gluster {#VOLUME_NAME} Heal Entries {ITEM.VALUE} Needs Recovery on {HOST.NAME}</name>
+                                    <priority>HIGH</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+        </template>
+    </templates>
+</zabbix_export>
